@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\..\L1_7\Assets\tornscript.cs" Link="tornscript.cs" />
+    <Compile Include="..\ExplodObject.cs" Link="ExplodObject.cs" />
+    <Compile Include="..\GoObject.cs" Link="GoObject.cs" />
+    <Compile Include="..\HideTrigger.cs" Link="HideTrigger.cs" />
+    <Compile Include="..\MessageTrigger.cs" Link="MessageTrigger.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Unity\Hub\Editor\2021.3.7f1\Editor\Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

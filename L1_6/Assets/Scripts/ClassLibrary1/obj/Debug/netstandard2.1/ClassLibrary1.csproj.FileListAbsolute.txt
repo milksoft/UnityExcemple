@@ -1,0 +1,5 @@
+C:\Users\Milovanov Dmitry\Source\Unity\L1_6\Assets\Scripts\ClassLibrary1\obj\Debug\netstandard2.1\ClassLibrary1.csproj.AssemblyReference.cache
+C:\Users\Milovanov Dmitry\Source\Unity\L1_6\Assets\Scripts\ClassLibrary1\obj\Debug\netstandard2.1\ClassLibrary1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Milovanov Dmitry\Source\Unity\L1_6\Assets\Scripts\ClassLibrary1\obj\Debug\netstandard2.1\ClassLibrary1.AssemblyInfoInputs.cache
+C:\Users\Milovanov Dmitry\Source\Unity\L1_6\Assets\Scripts\ClassLibrary1\obj\Debug\netstandard2.1\ClassLibrary1.AssemblyInfo.cs
+C:\Users\Milovanov Dmitry\Source\Unity\L1_6\Assets\Scripts\ClassLibrary1\obj\Debug\netstandard2.1\ClassLibrary1.csproj.CoreCompileInputs.cache
