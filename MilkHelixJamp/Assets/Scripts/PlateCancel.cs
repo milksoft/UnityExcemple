@@ -4,9 +4,9 @@ public class PlateCancel : MonoBehaviour
 {
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.TryGetComponent(out Player player))
+        if (GameInputControler.Instance.IsPlayer(collision.gameObject))
         {
-            Debug.Log("level up");
+            GameInputControler.Instance.StartNewGame();
         }
     }
 }

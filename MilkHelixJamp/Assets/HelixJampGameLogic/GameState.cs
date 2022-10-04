@@ -1,125 +1,52 @@
-﻿using UnityEngine;
+﻿using System;
+
+using UnityEngine;
 
 namespace HelixJampGameLogic
 {
-    public interface ILevelBaseObjects
+    public class GameInstanceState
     {
-        GameObject LevelRoot { get; }
-        GameObject Player { get; }
-        GameObject Camera { get; }
-    }
-
-    public interface ILevelResource
-    {
-        GameObject PrefabPlateCancel { get; }
-        GameObject PrefabPlatform { get; }
-        GameObject PrefabSectorBad { get; }
-        GameObject PrefabSectorGood { get; }
-        GameObject PrefabSterm { get; }
-    }
-
-    //internal class GameInputControler
-    //{
-       
-    //}
-
-    internal class GameInstanceState
-    {
-        private readonly LevelInit InstanceLevel;
-        private int Score;
-
-        public GameInstanceState(GameState mainGameData)
+        public GameInstanceState(int currentLevelIndex)
         {
-            //Input = new GameInputControler(this);
-            Interaction = new InteractivatingObjects(this);
-            MainGameData = mainGameData;
+            CurrentLevelIndex = currentLevelIndex;
+            AllPlatformCount = LevelGenerator.GetAllCountPlatforms(currentLevelIndex);
+            OnGameStateChanged?.Invoke(this);
         }
 
-        public Transform CurrentPlatform { get; internal set; }
-        //public GameInputControler Input { get; }
-        public InteractivatingObjects Interaction { get; }
-        public GameState MainGameData { get; }
+        public event Action<GameInstanceState> OnGameStateChanged;
+
+        public int AllPlatformCount { get; }
+
+        public int CurrentLevelIndex { get; }
+        public Transform CurrentPlatform { get; set; }
+        public int Score { get; private set; } = 0;
+
+        internal void AddScore()
+        {
+            Score++;
+            OnGameStateChanged?.Invoke(this);
+        }
     }
 
-    internal class GameState
+    public class GameState
     {
-        private int currentLevelIndex = 0;
+        private int _CurrentLevelIndex = 0;
 
-        public static GameState Game { get; private set; }
+        public event Action<GameState> OnGameStateChanged;
 
         public GameInstanceState CurrentLevel { get; private set; }
-
-        public LevelGenerator Generator { get; private set; }
-
-        public Transform Levelroot { get; private set; }
-
         public int MaximumScore { get; private set; }
 
-        public Rigidbody PlayerRigidbody { get; private set; }
-
-        public static void InitGame(ILevelBaseObjects levelbase,ILevelResource levelResource )
+        public void LevelPlay(bool isReplay)
         {
-            Game = new GameState();
-            Game.Levelroot = levelbase.LevelRoot.transform;
-            Game.PlayerRigidbody = levelbase.Player.GetComponent<Rigidbody>();
-
-            Game.Generator = new LevelGenerator(levelResource);
-        }
-
-        public void StartNewGame()
-        {
-            currentLevelIndex++;
-            CurrentLevel = new GameInstanceState(this);
-            Generator.ClearLevel(Levelroot.transform);
-            Generator.CreateLevelInterier(Levelroot.transform, currentLevelIndex);
-        }
-    }
-
-    internal class InteractivatingObjects
-    {
-        //private readonly Rigidbody phisPlayer;
-        private readonly GameInstanceState gameInstance;
-
-        public InteractivatingObjects(GameInstanceState gameInstance)
-        {
-            this.gameInstance = gameInstance;
-        }
-
-        public void OnNewStep(GameObject other,Collider bullet)
-        {
-            //if (other.TryGetComponent(out Rigidbody player))
-            //{
-                //this.gameObject.GetComponentInParent<LevelInit>().
-                gameInstance.CurrentPlatform = other.gameObject.transform;
-                //player.CurrentPlatform = this;
-            //}
-        }
-
-        public void OnSectorToPlayerCollision(Collision collision)
-        {
-            const float unlockdistance = 0.5f;
-
-            if (collision.collider.TryGetComponent(out Rigidbody player))
+            if (!isReplay)
             {
-                var normal = -collision.contacts[0].normal.normalized;
-                var dot = Vector3.Dot(normal, Vector3.up);
-                if (dot >= unlockdistance)
-                {
-                    var stype = gameInstance.MainGameData.Generator.GetSectorType(collision.gameObject);
-                    if (stype == LevelGenerator.SectorType.Bad)
-                        Debug.Log("gameover");
-                    else
-                    {
-                        PlayerBounce(player);
-                    }
-                }
+                _CurrentLevelIndex++;
+                MaximumScore += CurrentLevel?.Score ?? 0;
             }
-        }
 
-        public void PlayerBounce(Rigidbody player)
-        {
-            const float Bouncespeed = 12;
-            player.velocity = new Vector3(0, Bouncespeed, 0);
+            CurrentLevel = new GameInstanceState(_CurrentLevelIndex);
+            OnGameStateChanged?.Invoke(this);
         }
     }
 }

@@ -2,6 +2,15 @@ using UnityEngine;
 
 namespace HelixJampGameLogic
 {
+    public interface ILevelResource
+    {
+        GameObject PrefabPlateCancel { get; }
+        GameObject PrefabPlatform { get; }
+        GameObject PrefabSectorBad { get; }
+        GameObject PrefabSectorGood { get; }
+        GameObject PrefabSterm { get; }
+    }
+
     public class LevelGenerator
     {
         private const float platformBetweenDistance = 2;
@@ -21,9 +30,16 @@ namespace HelixJampGameLogic
             Bad
         }
 
+        private enum HardCore
+        {
+            Easy,
+            Midlle,
+            Hard
+        }
+
         public void CreateLevelInterier(Transform Levelroot, int levelIndex)
         {
-            int CountPlatforms = 5 * levelIndex;
+            int CountPlatforms = GetAllCountPlatforms(levelIndex);
             System.Random rand = new System.Random(levelIndex);
             int levellength = CountPlatforms * 2;
 
@@ -42,21 +58,9 @@ namespace HelixJampGameLogic
             plate.transform.SetParent(Levelroot, false);
         }
 
-        public SectorType GetSectorType(GameObject sector)
-        {
-            //var prefab = PrefabUtility.GetPrefabParent(sector);
-            var m = sector.GetComponent<Material>();
-            var m1 = levelResorce.PrefabSectorGood.GetComponent<Material>();
-            if (m.GetInstanceID() == m1.GetInstanceID())
-                return SectorType.Good;
-            var m2 = levelResorce.PrefabSectorBad.GetComponent<Material>();
-            if (m.GetInstanceID() == m2.GetInstanceID())
-                return SectorType.Bad;
+        public static int GetAllCountPlatforms(int levelIndex) => 5 * levelIndex;
 
-            return SectorType.None;
-        }
-
-        internal void ClearLevel(Transform levelroot)
+        public void ClearLevel(Transform levelroot)
         {
             for (int i = 0; i < levelroot.childCount; i++)
             {
@@ -69,9 +73,8 @@ namespace HelixJampGameLogic
             var pos = new Vector3(0, -platformBetweenDistance * platformindex, 0);
 
             GameObject platform = GameObject.Instantiate(levelResorce.PrefabPlatform, Levelroot);
-            
-           
-            var sects = RandomisePlatform(r);
+
+            var sects = RandomisePlatform(r, HardCore.Easy);
 
             if (platformindex == 0)
                 sects[0] = SectorType.Good;// spawn point
@@ -95,9 +98,8 @@ namespace HelixJampGameLogic
             GameObject sector = GameObject.Instantiate(prefab, parent);
             var rotate = Quaternion.Euler(0, index * sectorangle, 0);
             sector.transform.localRotation = rotate;
-            //sector.GetPrefabDefinition();
-            //if (sector.TryGetComponent(out Sector data))
-            //    data.IsKiller = stype == SectorType.Bad;
+            var SectorInfo = sector.GetComponent<Sector>();
+            SectorInfo.SectorType = stype;
 
             return sector;
         }
@@ -117,28 +119,51 @@ namespace HelixJampGameLogic
             }
         }
 
-        //private enum HardCore
-        //{
-        //    Easy,
-        //    Midlle,
-        //    Hard
-        //}
-
-        private SectorType[] RandomisePlatform(System.Random r/*, HardCore HardCore*/)
+        private SectorType[] RandomisePlatform(System.Random r, HardCore hardCore)
         {
             SectorType[] sectorTypes = new SectorType[sectorcount];
             bool iswindow = false;
-            for (int i = 0; i < sectorcount; i++)
+
+            switch (hardCore)
             {
-                sectorTypes[i] = (SectorType)r.Next(3);
-                if (sectorTypes[i] == SectorType.None)
-                    iswindow = true;
+                case HardCore.Easy:
+                    {
+                        bool isbad = false;
+                        for (int i = 0; i < sectorcount; i++)
+                        {
+                            sectorTypes[i] = (SectorType)r.Next(isbad ? 2 : 3);
+                            if (sectorTypes[i] == SectorType.None)
+                                iswindow = true;
+                            if (sectorTypes[i] == SectorType.Bad)
+                                isbad = true;
+                        }
+                    }
+                    break;
+
+                case HardCore.Midlle:
+                    for (int i = 0; i < sectorcount; i++)
+                    {
+                        sectorTypes[i] = (SectorType)r.Next(3);
+                        if (sectorTypes[i] == SectorType.None)
+                            iswindow = true;
+                    }
+                    break;
+
+                case HardCore.Hard:
+                    for (int i = 0; i < sectorcount; i++)
+                    {
+                        sectorTypes[i] = SectorType.Bad;
+                        if (sectorTypes[i] == SectorType.None)
+                            iswindow = true;
+                    }
+                    break;
             }
 
             if (!iswindow)
             {
                 sectorTypes[0] = SectorType.None;
             }
+
             return sectorTypes;
         }
     }
