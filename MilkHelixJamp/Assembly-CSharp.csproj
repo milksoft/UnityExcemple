@@ -60,6 +60,7 @@
     <Compile Include="Assets\Scripts\Sector.cs" />
     <Compile Include="Assets\Scripts\GameInputControler.cs" />
     <Compile Include="Assets\Scripts\Platform.cs" />
+    <Compile Include="Assets\Scripts\UiView.cs" />
     <Compile Include="Assets\HelixJampGameLogic\GameState.cs" />
     <Compile Include="Assets\Scripts\LevelInit.cs" />
     <Compile Include="Assets\HelixJampGameLogic\LevelGenerator.cs" />
