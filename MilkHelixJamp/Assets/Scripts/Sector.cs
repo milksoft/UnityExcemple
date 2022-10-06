@@ -4,25 +4,7 @@ using UnityEngine;
 
 public class Sector : MonoBehaviour
 {
-    public HelixJampGameLogic.LevelGenerator.SectorType SectorType { get; set; }
-
-    public void OnGoodSectorToPlayerCollision(GameObject sector, Collision collision)
-    {
-        const float unlockdistance = 0.5f;
-
-        if (collision.collider.TryGetComponent(out Rigidbody player))
-        {
-            var normal = -collision.contacts[0].normal.normalized;
-            var dot = Vector3.Dot(normal, Vector3.up);
-            if (dot >= unlockdistance)
-            {
-                if (SectorType == LevelGenerator.SectorType.Bad)
-                    GameInputControler.Instance.StopGame();
-                else
-                    PlayerBounce(player);
-            }
-        }
-    }
+    public HelixJampGameLogic.SectorType SectorType { get; set; }
 
     public void PlayerBounce(Rigidbody player)
     {
@@ -32,11 +14,16 @@ public class Sector : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (SectorType == LevelGenerator.SectorType.Bad)
-            GameInputControler.Instance.StopGame();
-        else
-            if (collision.collider.TryGetComponent(out Rigidbody player))
-            PlayerBounce(player);
-        //OnGoodSectorToPlayerCollision(this.gameObject, collision);
+        if (enabled && collision.collider.TryGetComponent(out Rigidbody player))
+        {
+            if (SectorType == SectorType.Bad)
+            {
+                GameInputControler.Instance.StopGame(false);
+            }
+            else
+            {
+                PlayerBounce(player);
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ public class PlateCancel : MonoBehaviour
     {
         if (GameInputControler.Instance.IsPlayer(collision.gameObject))
         {
-            GameInputControler.Instance.StartNewGame();
+            GameInputControler.Instance.StopGame(true);
         }
     }
 }

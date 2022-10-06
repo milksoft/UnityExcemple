@@ -12,7 +12,6 @@ public class LevelInit : MonoBehaviour, HelixJampGameLogic.ILevelResource
 
     public GameObject prefabSterm;
 
-
     #region ILevelResource
 
     GameObject HelixJampGameLogic.ILevelResource.PrefabPlateCancel => prefabPlateCancel;

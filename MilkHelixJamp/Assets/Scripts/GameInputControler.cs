@@ -7,23 +7,22 @@ public class GameInputControler : MonoBehaviour
     public GameObject MainCamera;
     public GameObject player;
     public GameObject RotationRoot;
-   
+
     private readonly Vector3 _CameraViewOffset = new Vector3(0, 3, 18);
     private LevelGenerator _Generator;
     private LevelInit _LevelViewData;
     private Vector3 _previousPosition = default;
-   
-    public static GameInputControler Instance { get; private set; }
-   
-    public GameState GameState { get; private set; }
 
+    public static GameInputControler Instance { get; private set; }
+
+    public GameState GameState { get; private set; }
 
     public void CameraControlUpdateLoop()
     {
-        const float SpeedViewScroll = 30f;
-
         if (GameState.CurrentLevel.CurrentPlatform == null)
             return;
+
+        const float SpeedViewScroll = 30f;
         var targetpos = GameState.CurrentLevel.CurrentPlatform.position + _CameraViewOffset;
         MainCamera.transform.position =
             Vector3.MoveTowards(MainCamera.transform.position, targetpos, SpeedViewScroll * Time.deltaTime);
@@ -47,36 +46,33 @@ public class GameInputControler : MonoBehaviour
         _previousPosition = Input.mousePosition;
     }
 
-    public void StartNewGame()
+    public void StartNextLevel()
     {
         GameState.LevelPlay(false);
         _Generator.ClearLevel(RotationRoot.transform);
-        _Generator.CreateLevelInterier(RotationRoot.transform, GameState.CurrentLevel.CurrentLevelIndex);
+        _Generator.CreateLevelInterier(RotationRoot.transform, GameState.CurrentLevel.CurrentLevelIndex, GameState.HardCore);
         ClearPlayer();
+        GameState.StateUi = StateUi.GamePlaying;
     }
 
-    public void StopGame()
+    public void StartReplayGame()
     {
         GameState.LevelPlay(true);
         _Generator.ClearLevel(RotationRoot.transform);
-        _Generator.CreateLevelInterier(RotationRoot.transform, GameState.CurrentLevel.CurrentLevelIndex);
+        _Generator.CreateLevelInterier(RotationRoot.transform, GameState.CurrentLevel.CurrentLevelIndex, GameState.HardCore);
         ClearPlayer();
-    }
-
-    private void Awake()
-    {
-        Initialise();
-        Instance = this;
+        GameState.StateUi = StateUi.GamePlaying;
     }
 
     private void ClearPlayer()
     {
         player.transform.localPosition = new Vector3(0, 1, 5);
+        player.GetComponent<Rigidbody>().useGravity = true;
         MainCamera.transform.position = RotationRoot.transform.position;
         RotationRoot.transform.rotation = new Quaternion(0, 0, 0, 0);
     }
 
-    private void Initialise()
+    public void Initialise()
     {
         _LevelViewData = RotationRoot?.GetComponent<LevelInit>();
         if (_LevelViewData == null)
@@ -84,17 +80,30 @@ public class GameInputControler : MonoBehaviour
 
         _Generator = new LevelGenerator(_LevelViewData);
         GameState = new GameState();
-        //HelixJampGameLogic.GameState.InitGame(this, LevelViewData);
+        Instance = this;
+    }
+
+    private void Awake()
+    {
+        Initialise();
     }
 
     private void Start()
     {
-        StartNewGame();
+        GameState.StateUi = StateUi.StartScreen;
     }
 
     private void Update()
     {
+        if (GameState?.StateUi != StateUi.GamePlaying)
+            return;
+
         CameraControlUpdateLoop();
         MouseInputControlUpdateLoop();
+    }
+
+    public void StopGame(bool IsWin)
+    {
+        GameState.StateUi = (IsWin) ? StateUi.GamePaused : StateUi.GameOver;
     }
 }

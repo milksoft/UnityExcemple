@@ -2,6 +2,20 @@ using UnityEngine;
 
 namespace HelixJampGameLogic
 {
+    public enum HardCore
+    {
+        Easy,
+        Midlle,
+        Hard
+    }
+
+    public enum SectorType
+    {
+        None,
+        Good,
+        Bad
+    }
+
     public interface ILevelResource
     {
         GameObject PrefabPlateCancel { get; }
@@ -23,21 +37,17 @@ namespace HelixJampGameLogic
             this.levelResorce = levelResorce;
         }
 
-        public enum SectorType
+        public static int GetAllCountPlatforms(int levelIndex) => 5 * levelIndex;
+
+        public void ClearLevel(Transform levelroot)
         {
-            None,
-            Good,
-            Bad
+            for (int i = 0; i < levelroot.childCount; i++)
+            {
+                GameObject.Destroy(levelroot.GetChild(i).gameObject);
+            }
         }
 
-        private enum HardCore
-        {
-            Easy,
-            Midlle,
-            Hard
-        }
-
-        public void CreateLevelInterier(Transform Levelroot, int levelIndex)
+        public void CreateLevelInterier(Transform Levelroot, int levelIndex, HardCore odds)
         {
             int CountPlatforms = GetAllCountPlatforms(levelIndex);
             System.Random rand = new System.Random(levelIndex);
@@ -50,7 +60,7 @@ namespace HelixJampGameLogic
 
             for (int i = 0; i < CountPlatforms; i++)
             {
-                var platform = CreatePlatform(i, rand, Levelroot);
+                var platform = CreatePlatform(i, rand, Levelroot, odds);
             }
 
             GameObject plate = GameObject.Instantiate(levelResorce.PrefabPlateCancel);
@@ -58,23 +68,13 @@ namespace HelixJampGameLogic
             plate.transform.SetParent(Levelroot, false);
         }
 
-        public static int GetAllCountPlatforms(int levelIndex) => 5 * levelIndex;
-
-        public void ClearLevel(Transform levelroot)
-        {
-            for (int i = 0; i < levelroot.childCount; i++)
-            {
-                GameObject.Destroy(levelroot.GetChild(i).gameObject);
-            }
-        }
-
-        private GameObject CreatePlatform(int platformindex, System.Random r, Transform Levelroot)
+        private GameObject CreatePlatform(int platformindex, System.Random r, Transform Levelroot, HardCore odds)
         {
             var pos = new Vector3(0, -platformBetweenDistance * platformindex, 0);
 
             GameObject platform = GameObject.Instantiate(levelResorce.PrefabPlatform, Levelroot);
 
-            var sects = RandomisePlatform(r, HardCore.Easy);
+            var sects = RandomisePlatform(r, odds);
 
             if (platformindex == 0)
                 sects[0] = SectorType.Good;// spawn point
@@ -152,7 +152,8 @@ namespace HelixJampGameLogic
                 case HardCore.Hard:
                     for (int i = 0; i < sectorcount; i++)
                     {
-                        sectorTypes[i] = SectorType.Bad;
+                        var x = r.Next(5);
+                        sectorTypes[i] = x < 2 ? (SectorType)x : SectorType.Bad;
                         if (sectorTypes[i] == SectorType.None)
                             iswindow = true;
                     }
@@ -161,7 +162,7 @@ namespace HelixJampGameLogic
 
             if (!iswindow)
             {
-                sectorTypes[0] = SectorType.None;
+                sectorTypes[3] = SectorType.None;
             }
 
             return sectorTypes;
