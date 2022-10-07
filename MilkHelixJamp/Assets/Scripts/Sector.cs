@@ -10,6 +10,7 @@ public class Sector : MonoBehaviour
     {
         const float Bouncespeed = 12;
         player.velocity = new Vector3(0, Bouncespeed, 0);
+        player.GetComponent<AudioSource>().Play();
     }
 
     private void OnCollisionEnter(Collision collision)

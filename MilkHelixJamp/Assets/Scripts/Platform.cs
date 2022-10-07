@@ -2,6 +2,25 @@ using UnityEngine;
 
 public class Platform : MonoBehaviour
 {
+    private void ExploidPlatform(GameObject platform)
+    {
+        platform.GetComponent<AudioSource>().Play();
+        Vector3 volume = new Vector3(-10, -10, -10);
+        foreach (Transform item in platform.transform)
+        {
+            if (item.TryGetComponent(out Rigidbody rb))
+            {
+                rb.useGravity = true;
+                rb.isKinematic = false;
+                rb.AddTorque(volume, ForceMode.Impulse);
+            }
+            if (item.TryGetComponent(out Sector s))
+            {
+                s.enabled = false;
+            }
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (GameInputControler.Instance.IsPlayer(other.gameObject))
@@ -16,28 +35,6 @@ public class Platform : MonoBehaviour
         {
             other.gameObject.SetActive(false);
             Destroy(other);
-        }
-    }
-
-    private void ExploidPlatform(GameObject platform)
-    {
-        Vector3 volume = new Vector3(-10, -10, -10);
-        foreach (Transform item in platform.transform)
-        {
-            if (item.gameObject.TryGetComponent(out Rigidbody rb))
-            {
-                rb.useGravity = true;
-                rb.isKinematic = false;
-                rb.AddTorque(volume, ForceMode.Impulse);
-            }
-            if (item.gameObject.TryGetComponent(out Sector s))
-            {
-                s.enabled = false;
-            }
-            //if (item.TryGetComponent<MeshCollider>(out MeshCollider mc))
-            //{
-            //    //mc.enabled = false;
-            //}
         }
     }
 }

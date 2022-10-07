@@ -18,37 +18,45 @@ public class UiView : MonoBehaviour
     public TMP_Text ScoreRecord;
     public GameObject ScoreView;
     public GameObject StartView;
+    public AudioSource buttonclickSound;
+    public AudioSource MainSongSound;
 
     public void ExitGame()
     {
+        buttonclickSound.Play();
         Application.Quit();
     }
 
     public void StartGameEasy()
     {
+        buttonclickSound.Play();
         GameInputControler.Instance.GameState.HardCore = HardCore.Easy;
         GameInputControler.Instance.StartNextLevel();
     }
 
     public void StartGameHard()
     {
+        buttonclickSound.Play();
         GameInputControler.Instance.GameState.HardCore = HardCore.Hard;
         GameInputControler.Instance.StartNextLevel();
     }
 
     public void StartGameMidle()
     {
+        buttonclickSound.Play();
         GameInputControler.Instance.GameState.HardCore = HardCore.Midlle;
         GameInputControler.Instance.StartNextLevel();
     }
 
     public void StartNext()
     {
+        buttonclickSound.Play();
         GameInputControler.Instance.StartNextLevel();
     }
 
     public void StartReplay()
     {
+        buttonclickSound.Play();
         GameInputControler.Instance.StartReplayGame();
     }
 
@@ -78,6 +86,7 @@ public class UiView : MonoBehaviour
                 ScoreView.SetActive(value: false);
                 NextView.SetActive(value: false);
                 GameOverView.SetActive(value: false);
+                MainSongSound.Play();
                 break;
 
             case StateUi.GamePlaying:
@@ -86,6 +95,7 @@ public class UiView : MonoBehaviour
                 ScoreView.SetActive(value: true);
                 NextView.SetActive(value: false);
                 GameOverView.SetActive(value: false);
+                MainSongSound.Stop();
                 break;
 
             case StateUi.GamePaused:
@@ -94,6 +104,7 @@ public class UiView : MonoBehaviour
                 ScoreView.SetActive(value: true);
                 NextView.SetActive(value: true);
                 GameOverView.SetActive(value: false);
+                MainSongSound.Play();
                 break;
 
             case StateUi.GameOver:
@@ -102,6 +113,7 @@ public class UiView : MonoBehaviour
                 ScoreView.SetActive(value: true);
                 NextView.SetActive(value: false);
                 GameOverView.SetActive(value: true);
+                MainSongSound.Play();
                 break;
         }
     }
