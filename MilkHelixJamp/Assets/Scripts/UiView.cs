@@ -124,3 +124,11 @@ public class UiView : MonoBehaviour
         GameInputControler.Instance.GameState.OnGameStateUIChanged += OnGameStateUIChanged;
     }
 }
+
+public enum StateUi
+{
+    StartScreen,
+    GamePlaying,
+    GamePaused,
+    GameOver,
+}

@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace HelixJampGameLogic
 {
-    public enum StateUi
-    {
-        StartScreen,
-        GamePlaying,
-        GamePaused,
-        GameOver,
-    }
 
     public class GameInstanceState
     {
